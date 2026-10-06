@@ -1,0 +1,46 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Assignments | AssetFlow{% endblock %}
+{% block nav_assignments %}active{% endblock %}
+{% block page_title %}Assignments{% endblock %}
+{% block page_subtitle %}Track asset assignments to employees{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'export_assignments_csv' %}" class="btn-green">⬇ Export CSV</a>
+    <a href="{% url 'add_assignment' %}" class="btn-primary">＋ Assign Asset</a>
+{% endblock %}
+
+{% block extra_css %}
+    .asset-name{font-weight:600;}.asset-code{font-size:11.5px;color:var(--muted2);margin-top:2px;font-family:monospace;}
+    .badge-assigned{background:#f5f3ff;color:#7c3aed;padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:700;}
+    .badge-returned{background:#f0fdf4;color:#15803d;padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:700;}
+{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <div class="table-head">
+        <h2>All Assignments</h2>
+        <span class="count">{{ assignments|length }} records</span>
+    </div>
+    {% if assignments %}
+    <table>
+        <thead><tr><th>Asset</th><th>Employee</th><th>Department</th><th>Assigned Date</th><th>Returned Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for assignment in assignments %}
+        <tr>
+            <td><div class="asset-name">{{ assignment.asset.asset_name }}</div><div class="asset-code">{{ assignment.asset.asset_code }}</div></td>
+            <td>{{ assignment.employee.name }}</td>
+            <td>{{ assignment.employee.department }}</td>
+            <td>{{ assignment.assigned_date }}</td>
+            <td>{% if assignment.returned_date %}{{ assignment.returned_date }}{% else %}&mdash;{% endif %}</td>
+            <td>{% if assignment.returned_date %}<span class="badge-returned">✓ Returned</span>{% else %}<span class="badge-assigned">⚡ Assigned</span>{% endif %}</td>
+            <td>{% if assignment.returned_date %}<span style="color:var(--muted2);font-size:12px;">Completed</span>{% else %}<a href="{% url 'return_asset' assignment.id %}" class="btn-return">↩ Return</a>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><span class="e-icon">📋</span>No assignments found yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssetFlow — Create Account | Enterprise ITAM</title>
+    <meta name="description" content="Register a new AssetFlow account - Enterprise IT Asset Lifecycle Management System">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-surface: #0c1222;
+            --bg-card: rgba(15, 23, 42, 0.72);
+            --bg-input: rgba(30, 41, 59, 0.6);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(99, 102, 241, 0.4);
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #4f46e5;
+            --accent-secondary: #06b6d4;
+            --accent-violet: #8b5cf6;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glow */
+        .ambient-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.28;
+            animation: floatOrb 18s ease-in-out infinite alternate;
+        }
+
+        .glow-orb-1 {
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, var(--accent-violet), transparent 70%);
+            top: -100px;
+            right: -100px;
+        }
+
+        .glow-orb-2 {
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, var(--accent-primary), transparent 70%);
+            bottom: -80px;
+            left: -80px;
+            animation-duration: 22s;
+            animation-delay: -5s;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, -30px) scale(1.08); }
+            100% { transform: translate(-30px, 40px) scale(0.95); }
+        }
+
+        /* Auth Container */
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1060px;
+            min-height: 640px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            overflow: hidden;
+            animation: modalFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(28px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Left Showcase Panel */
+        .showcase-panel {
+            padding: 56px 48px;
+            background: linear-gradient(145deg, rgba(30, 27, 75, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 40px;
+        }
+
+        .brand-logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.35rem;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .brand-title-wrap h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-title-wrap p {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .hero-text h2 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            line-height: 1.22;
+            letter-spacing: -0.03em;
+            margin-bottom: 14px;
+        }
+
+        .hero-text h2 span {
+            background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 32px;
+        }
+
+        /* Step Timeline */
+        .step-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .step-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.18);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.82rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-label {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .step-label strong {
+            color: var(--text-primary);
+        }
+
+        .showcase-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        /* Right Form Panel */
+        .form-panel {
+            padding: 48px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(12, 18, 34, 0.6);
+            overflow-y: auto;
+        }
+
+        .form-panel-header {
+            margin-bottom: 24px;
+        }
+
+        .form-panel-header h3 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .form-panel-header p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        /* Alert Box */
+        .messages-wrap {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .alert-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            animation: slideInDown 0.3s ease;
+        }
+
+        .alert-error {
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #fb7185;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        /* Form Controls */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .input-label span.opt {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon-left {
+            position: absolute;
+            left: 14px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 11px 40px 11px 40px;
+            background: var(--bg-input);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.88rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-primary);
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            font-size: 0.9rem;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-primary);
+        }
+
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-violet));
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
+            background: linear-gradient(135deg, var(--accent-primary-hover), #7c3aed);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        .form-footer-box {
+            margin-top: 20px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .form-footer-box a {
+            color: var(--accent-secondary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .form-footer-box a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 900px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+            }
+            .showcase-panel {
+                display: none;
+            }
+            .form-panel {
+                padding: 40px 28px;
+            }
+            .form-row-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow">
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <div class="auth-container">
+
+        <!-- Left Showcase -->
+        <div class="showcase-panel">
+            <div>
+                <div class="brand-header">
+                    <div class="brand-logo-icon">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="brand-title-wrap">
+                        <h1>AssetFlow</h1>
+                        <p>Enterprise ITAM</p>
+                    </div>
+                </div>
+
+                <div class="hero-text">
+                    <h2>Deploy IT Controls<br>In <span>Under 2 Minutes</span></h2>
+                    <p>Create your team account to instantly catalog laptops, servers, accessories, and warranty lifecycles with enterprise security.</p>
+                </div>
+
+                <div class="step-timeline">
+                    <div class="step-item">
+                        <div class="step-badge">1</div>
+                        <div class="step-label">Register your <strong>operator profile</strong></div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge">2</div>
+                        <div class="step-label">Instant access to <strong>AssetFlow Console</strong></div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-badge">3</div>
+                        <div class="step-label">Manage assets, print QR tags &amp; run analytics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-footer">
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--accent-emerald);"></i> Role-based Access Control
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+                    v2.4
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Register Form -->
+        <div class="form-panel">
+            <div class="form-panel-header">
+                <h3>Create Account 🚀</h3>
+                <p>Register as a new AssetFlow system user</p>
+            </div>
+
+            {% if messages %}
+            <div class="messages-wrap">
+                {% for message in messages %}
+                <div class="alert-box {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                    <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'register' %}" class="auth-form" id="registerForm">
+                {% csrf_token %}
+
+                <div class="form-row-2">
+                    <div class="input-group">
+                        <label class="input-label" for="reg-first">First Name <span class="opt">(optional)</span></label>
+                        <div class="input-container">
+                            <i class="fa-solid fa-id-card input-icon-left"></i>
+                            <input type="text" id="reg-first" name="first_name" class="input-field" placeholder="John" autocomplete="given-name">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" for="reg-last">Last Name <span class="opt">(optional)</span></label>
+                        <div class="input-container">
+                            <i class="fa-solid fa-id-card input-icon-left"></i>
+                            <input type="text" id="reg-last" name="last_name" class="input-field" placeholder="Doe" autocomplete="family-name">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="reg-username">Username *</label>
+                    <div class="input-container">
+                        <i class="fa-solid fa-at input-icon-left"></i>
+                        <input type="text" id="reg-username" name="username" class="input-field" placeholder="Choose a username (min 3 chars)" required minlength="3" autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="reg-pass1">Password *</label>
+                    <div class="input-container">
+                        <i class="fa-solid fa-lock input-icon-left"></i>
+                        <input type="password" id="reg-pass1" name="password1" class="input-field" placeholder="Password (min 6 characters)" required minlength="6" autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePass('reg-pass1', 'eye1')">
+                            <i class="fa-solid fa-eye" id="eye1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="reg-pass2">Confirm Password *</label>
+                    <div class="input-container">
+                        <i class="fa-solid fa-shield-check input-icon-left"></i>
+                        <input type="password" id="reg-pass2" name="password2" class="input-field" placeholder="Re-enter your password" required autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePass('reg-pass2', 'eye2')">
+                            <i class="fa-solid fa-eye" id="eye2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button" id="regSubmitBtn">
+                    <span>Create Account</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="form-footer-box">
+                Already registered? 
+                <a href="{% url 'login' %}">Sign in to console →</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function togglePass(inputId, eyeId) {
+            const input = document.getElementById(inputId);
+            const eye = document.getElementById(eyeId);
+            if (input && eye) {
+                const isPass = input.getAttribute('type') === 'password';
+                input.setAttribute('type', isPass ? 'text' : 'password');
+                eye.className = isPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            }
+        }
+    </script>
+</body>
+</html>

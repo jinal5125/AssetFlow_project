@@ -1,0 +1,40 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Delete Asset | AssetFlow{% endblock %}
+{% block nav_assets %}active{% endblock %}
+{% block page_title %}Delete Asset{% endblock %}
+{% block page_subtitle %}Confirm asset deletion{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'assets_list' %}" class="btn-secondary">← Back to Assets</a>
+{% endblock %}
+
+{% block extra_css %}
+    .delete-confirm-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:40px;max-width:480px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.05);}
+    .del-icon{width:70px;height:70px;border-radius:50%;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;}
+    .del-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:10px;}
+    .del-desc{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:28px;}
+    .del-asset-name{color:var(--text);font-weight:700;}
+    .btn-delete-confirm{padding:12px 26px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+    .btn-delete-confirm:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(239,68,68,.35);}
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:center;align-items:flex-start;">
+    <div class="delete-confirm-card">
+        <div class="del-icon">🗑️</div>
+        <div class="del-title">Delete Asset?</div>
+        <div class="del-desc">
+            Are you sure you want to delete <span class="del-asset-name">{{ asset.asset_name }}</span>?<br>
+            This action cannot be undone.
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;">
+            <a href="{% url 'assets_list' %}" class="btn-cancel">Cancel</a>
+            <form method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete-confirm">🗑️ Delete Asset</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

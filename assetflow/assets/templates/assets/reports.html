@@ -1,0 +1,264 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Reports & Analytics | AssetFlow{% endblock %}
+{% block nav_reports %}active{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+{% block page_subtitle %}Real-time lifecycle metrics, category distributions, and exportable reports{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'export_assets_csv' %}{% if has_filters %}?status={{ selected_status }}&category={{ selected_category }}&start_date={{ start_date }}&end_date={{ end_date }}{% endif %}" class="btn-green">⬇ Export Assets CSV</a>
+    <a href="{% url 'export_assignments_csv' %}" class="btn-purple">⬇ Assignments CSV</a>
+    <a href="{% url 'export_maintenance_csv' %}" class="btn-return">⬇ Maintenance CSV</a>
+{% endblock %}
+
+{% block extra_css %}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;}
+    .stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+    .stat-label{font-size:13px;font-weight:600;color:var(--muted);}
+    .stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+    .stat-icon.blue{background:#eff6ff;color:#3b82f6;}
+    .stat-icon.green{background:#f0fdf4;color:#10b981;}
+    .stat-icon.purple{background:#f5f3ff;color:#8b5cf6;}
+    .stat-icon.amber{background:#fffbeb;color:#f59e0b;}
+    .stat-value{font-size:28px;font-weight:800;color:var(--text);line-height:1;}
+    .stat-sub{font-size:11.5px;color:var(--muted);margin-top:6px;}
+
+    .charts-row{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:24px;}
+    .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;}
+    .chart-head{margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+    .chart-head h3{font-size:15px;font-weight:700;}
+    .chart-head span{font-size:12px;color:var(--muted);background:#f1f5f9;padding:4px 10px;border-radius:20px;}
+    .chart-body{height:220px;position:relative;}
+
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;margin-bottom:24px;overflow:hidden;}
+    .panel-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#f8fafc;}
+    .panel-title{display:flex;align-items:center;gap:12px;}
+    .panel-title h3{font-size:15px;font-weight:700;margin:0;}
+    .panel-badge{font-size:12px;padding:3px 9px;border-radius:20px;background:#eef2ff;color:var(--primary);font-weight:600;}
+
+    .filter-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:24px;}
+    .filter-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .filter-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;}
+    .filter-badge{background:#eef2ff;color:var(--primary);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+    .filter-form{display:grid;grid-template-columns:repeat(4,1fr) auto auto;gap:12px;align-items:flex-end;}
+    
+    @media(max-width:1024px){.stats-grid{grid-template-columns:repeat(2,1fr);}.charts-row{grid-template-columns:1fr;}.filter-form{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:768px){.stats-grid{grid-template-columns:1fr;}.filter-form{grid-template-columns:1fr;}}
+{% endblock %}
+
+{% block content %}
+<div class="filter-card">
+    <div class="filter-head">
+        <div class="filter-title">
+            <span>🔍</span> Filter Asset Report
+            {% if has_filters %}<span class="filter-badge">Active Filters Applied</span>{% endif %}
+        </div>
+        <span style="font-size:12.5px;color:var(--muted);">Showing <strong>{{ filtered_count }}</strong> matching records</span>
+    </div>
+
+    <form method="GET" action="{% url 'reports' %}" class="filter-form">
+        <div class="form-group">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:5px;">Asset Status</label>
+            <select name="status">
+                <option value="">All Statuses</option>
+                <option value="Available" {% if selected_status == 'Available' %}selected{% endif %}>Available</option>
+                <option value="Assigned" {% if selected_status == 'Assigned' %}selected{% endif %}>Assigned</option>
+                <option value="Maintenance" {% if selected_status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                <option value="Retired" {% if selected_status == 'Retired' %}selected{% endif %}>Retired</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:5px;">Category</label>
+            <select name="category">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:5px;">Purchased From</label>
+            <input type="date" name="start_date" value="{{ start_date }}">
+        </div>
+        <div class="form-group">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:5px;">Purchased To</label>
+            <input type="date" name="end_date" value="{{ end_date }}">
+        </div>
+        <button type="submit" class="btn-primary" style="height:40px;">Filter</button>
+        {% if has_filters %}
+        <a href="{% url 'reports' %}" class="btn-secondary" style="height:40px;">Reset</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-label">Total Assets</div><div class="stat-icon blue">💻</div></div>
+        <div class="stat-value">{{ total_assets }}</div>
+        <div class="stat-sub">Asset Valuation: ₹{{ total_asset_value }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-label">Available</div><div class="stat-icon green">✅</div></div>
+        <div class="stat-value">{{ available_assets }}</div>
+        <div class="stat-sub">Ready in inventory for deployment</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-label">Assigned</div><div class="stat-icon purple">🔄</div></div>
+        <div class="stat-value">{{ assigned_assets }}</div>
+        <div class="stat-sub">Deployed across employees</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-label">Under Maintenance</div><div class="stat-icon amber">🛠️</div></div>
+        <div class="stat-value">{{ maintenance_assets }}</div>
+        <div class="stat-sub">Cumulative repairs: ₹{{ total_repair_cost }}</div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <div class="chart-head">
+            <h3>Asset Status Distribution</h3><span>Database Total: {{ total_assets }}</span>
+        </div>
+        <div class="chart-body"><canvas id="statusChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+        <div class="chart-head">
+            <h3>Assets by Category</h3><span>{{ categories|length }} active categories</span>
+        </div>
+        <div class="chart-body"><canvas id="categoryChart"></canvas></div>
+    </div>
+</div>
+
+<!-- SECTION 1 -->
+<div class="panel">
+    <div class="panel-head">
+        <div class="panel-title">
+            <h3>Asset Inventory Summary</h3>
+            <span class="panel-badge">{{ filtered_count }} Records</span>
+            {% if has_filters %}<span style="font-size:12px;color:#059669;font-weight:600;">Valuation: ₹{{ filtered_value }}</span>{% endif %}
+        </div>
+        <a href="{% url 'export_assets_csv' %}{% if has_filters %}?status={{ selected_status }}&category={{ selected_category }}&start_date={{ start_date }}&end_date={{ end_date }}{% endif %}" class="btn-green">⬇ Export</a>
+    </div>
+    <div style="overflow-x:auto;">
+        <table>
+            <thead><tr><th>Asset Details</th><th>Category</th><th>Brand</th><th>Purchase Date</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for asset in filtered_assets %}
+                <tr>
+                    <td><a href="{% url 'asset_detail' asset.id %}" style="font-weight:700;color:var(--text);text-decoration:none;">{{ asset.asset_name }}</a><div style="font-size:11.5px;color:var(--muted);font-family:monospace;">{{ asset.asset_code }} · #{{ asset.id }}</div></td>
+                    <td>{{ asset.category.name }}</td><td>{{ asset.brand }}</td><td>{{ asset.purchase_date }}</td>
+                    <td style="font-weight:600;color:#059669;">₹{{ asset.purchase_price }}</td>
+                    <td>
+                        {% if asset.status == "Available" %}<span class="badge badge-avail">Available</span>
+                        {% elif asset.status == "Assigned" %}<span class="badge badge-assign">Assigned</span>
+                        {% elif asset.status == "Maintenance" %}<span class="badge badge-maint">Maintenance</span>
+                        {% else %}<span class="badge badge-retir">Retired</span>{% endif %}
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:6px;">
+                            <a href="{% url 'asset_detail' asset.id %}" class="btn-sm btn-view">View Details</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="empty-row"><td colspan="7">No assets matched the selected filters.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="panel">
+    <div class="panel-head">
+        <div class="panel-title">
+            <h3>Employee Assignment Summary</h3>
+            <span class="panel-badge">{{ total_employees }} Employees · {{ active_assignments }} Active</span>
+        </div>
+        <a href="{% url 'export_assignments_csv' %}" class="btn-purple">⬇ Export</a>
+    </div>
+    <div style="overflow-x:auto;">
+        <table>
+            <thead><tr><th>Employee</th><th>Department</th><th>Email</th><th>Active Allocated Assets</th></tr></thead>
+            <tbody>
+                {% for emp in employees_with_assets %}
+                <tr>
+                    <td><strong>{{ emp.name }}</strong></td><td>{{ emp.department }}</td><td>{{ emp.email }}</td>
+                    <td><span class="badge badge-assign">{{ emp.active_count }} Asset{% if emp.active_count != 1 %}s{% endif %}</span></td>
+                </tr>
+                {% empty %}
+                <tr class="empty-row"><td colspan="4">No active asset allocations recorded.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="panel">
+    <div class="panel-head">
+        <div class="panel-title">
+            <h3>Maintenance & Service Records</h3>
+            <span class="panel-badge">{{ total_maintenance }} Total Records</span>
+        </div>
+        <a href="{% url 'export_maintenance_csv' %}" class="btn-return">⬇ Export</a>
+    </div>
+    <div style="overflow-x:auto;">
+        <table>
+            <thead><tr><th>Asset</th><th>Issue / Failure</th><th>Reported Date</th><th>Repair Date</th><th>Cost</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for m in recent_maintenance %}
+                <tr>
+                    <td><strong>{{ m.asset.asset_name }}</strong><div style="font-size:11.5px;color:var(--muted);font-family:monospace;">{{ m.asset.asset_code }}</div></td>
+                    <td>{{ m.issue }}{% if m.remarks %}<br><small style="color:var(--muted2);">{{ m.remarks }}</small>{% endif %}</td>
+                    <td>{{ m.reported_date }}</td>
+                    <td>{% if m.repair_date %}{{ m.repair_date }}{% else %}<span style="color:var(--muted2);">Pending</span>{% endif %}</td>
+                    <td style="font-weight:600;color:#059669;">₹{{ m.repair_cost }}</td>
+                    <td>
+                        {% if m.status == 'Open' %}<span class="badge badge-open">Open</span>
+                        {% elif m.status == 'In Progress' %}<span class="badge badge-prog">In Progress</span>
+                        {% else %}<span class="badge badge-done">Completed</span>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="empty-row"><td colspan="6">No maintenance history logged.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Available', 'Assigned', 'Maintenance', 'Retired'],
+            datasets: [{
+                data: [ Number("{{ available_assets }}"), Number("{{ assigned_assets }}"), Number("{{ maintenance_assets }}"), Number("{{ retired_assets }}") ],
+                backgroundColor: ['#10b981', '#8b5cf6', '#f59e0b', '#94a3b8'], borderWidth: 0, hoverOffset: 6
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 14, font: { family: 'Inter', size: 12 } } } }, cutout: '68%' }
+    });
+
+    const catLabels = [{% for cat in assets_by_category %}"{{ cat.name }}",{% endfor %}];
+    const catData = [{% for cat in assets_by_category %}{{ cat.asset_count }},{% endfor %}];
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+            labels: catLabels.length ? catLabels : ['None'],
+            datasets: [{ label: 'Asset Count', data: catData.length ? catData : [0], backgroundColor: '#6366f1', borderRadius: 8 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0, font: { family: 'Inter' } }, grid: { color: '#f1f5f9' } }, x: { ticks: { font: { family: 'Inter' } }, grid: { display: false } } }
+        }
+    });
+</script>
+{% endblock %}

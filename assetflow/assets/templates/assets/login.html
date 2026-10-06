@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssetFlow — Sign In | Enterprise IT Asset Management</title>
+    <meta name="description" content="Sign in to AssetFlow - Enterprise IT Asset Lifecycle Management System">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-surface: #0c1222;
+            --bg-card: rgba(15, 23, 42, 0.72);
+            --bg-input: rgba(30, 41, 59, 0.6);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(99, 102, 241, 0.4);
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #4f46e5;
+            --accent-secondary: #06b6d4;
+            --accent-violet: #8b5cf6;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Mesh Glow Background */
+        .ambient-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.28;
+            animation: floatOrb 18s ease-in-out infinite alternate;
+        }
+
+        .glow-orb-1 {
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, var(--accent-primary), transparent 70%);
+            top: -100px;
+            left: -100px;
+        }
+
+        .glow-orb-2 {
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, var(--accent-secondary), transparent 70%);
+            bottom: -80px;
+            right: -80px;
+            animation-duration: 22s;
+            animation-delay: -5s;
+        }
+
+        .glow-orb-3 {
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, var(--accent-violet), transparent 70%);
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.18;
+            animation-duration: 16s;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, -30px) scale(1.08); }
+            100% { transform: translate(-30px, 40px) scale(0.95); }
+        }
+
+        /* Auth Container */
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1060px;
+            min-height: 620px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            overflow: hidden;
+            animation: modalFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(28px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Left Showcase Panel */
+        .showcase-panel {
+            padding: 56px 48px;
+            background: linear-gradient(145deg, rgba(30, 27, 75, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .showcase-panel::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.25), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 40px;
+        }
+
+        .brand-logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.35rem;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .brand-title-wrap h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-title-wrap p {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .hero-text h2 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            line-height: 1.22;
+            letter-spacing: -0.03em;
+            margin-bottom: 14px;
+        }
+
+        .hero-text h2 span {
+            background: linear-gradient(135deg, #818cf8 0%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 32px;
+        }
+
+        /* Feature Cards */
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .feature-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateX(4px);
+        }
+
+        .feat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .feat-text {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .feat-sub {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        /* Trust Badge Footer */
+        .showcase-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .trust-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            box-shadow: 0 0 10px var(--accent-emerald);
+            animation: pulseDot 2s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        /* Right Form Panel */
+        .form-panel {
+            padding: 56px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(12, 18, 34, 0.6);
+        }
+
+        .form-panel-header {
+            margin-bottom: 28px;
+        }
+
+        .form-panel-header h3 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .form-panel-header p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Alert Toast */
+        .messages-wrap {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .alert-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            animation: slideInDown 0.3s ease;
+        }
+
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-error {
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #fb7185;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        /* Form Controls */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon-left {
+            position: absolute;
+            left: 16px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 13px 44px 13px 44px;
+            background: var(--bg-input);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.92rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-primary);
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+        }
+
+        .input-field:focus + .input-icon-left {
+            color: var(--accent-primary);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-primary);
+        }
+
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-violet));
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.98rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
+            background: linear-gradient(135deg, var(--accent-primary-hover), #7c3aed);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        /* Footer Links */
+        .form-footer-box {
+            margin-top: 24px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .form-footer-box a {
+            color: var(--accent-secondary);
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .form-footer-box a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+
+
+        /* Responsive Breakpoints */
+        @media (max-width: 900px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+            }
+            .showcase-panel {
+                display: none;
+            }
+            .form-panel {
+                padding: 42px 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Floating Orbs -->
+    <div class="ambient-glow">
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <!-- Main Auth Card -->
+    <div class="auth-container">
+
+        <!-- Left Showcase Side -->
+        <div class="showcase-panel">
+            <div>
+                <div class="brand-header">
+                    <div class="brand-logo-icon">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="brand-title-wrap">
+                        <h1>AssetFlow</h1>
+                        <p>Enterprise ITAM</p>
+                    </div>
+                </div>
+
+                <div class="hero-text">
+                    <h2>Track Every Asset<br>From <span>Order to Retire</span></h2>
+                    <p>Complete IT lifecycle management with hardware scanning, smart employee assignments, and maintenance logs.</p>
+                </div>
+
+                <div class="features-list">
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="fa-solid fa-qrcode"></i></div>
+                        <div>
+                            <div class="feat-text">Instant QR Hardware Tagging</div>
+                            <div class="feat-sub">Camera scanner & instant detail lookup</div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="fa-solid fa-arrows-split-up-and-left"></i></div>
+                        <div>
+                            <div class="feat-text">Strict Lifecycle Control</div>
+                            <div class="feat-sub">Zero duplicate assignments or lost assets</div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                        <div>
+                            <div class="feat-text">Real-time Valuation & Reports</div>
+                            <div class="feat-sub">Automated metrics & 1-click CSV export</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-footer">
+                <div class="trust-pill">
+                    <div class="status-pulse"></div>
+                    <span>System Online • v2.4 Enterprise</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+                    AES-256 Auth
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Login Form -->
+        <div class="form-panel">
+            <div class="form-panel-header">
+                <h3>Welcome back 👋</h3>
+                <p>Sign in to access your AssetFlow administrative console</p>
+            </div>
+
+            {% if messages %}
+            <div class="messages-wrap">
+                {% for message in messages %}
+                <div class="alert-box {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                    <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}" class="auth-form" id="loginForm">
+                {% csrf_token %}
+
+                <div class="input-group">
+                    <label class="input-label" for="username">Username</label>
+                    <div class="input-container">
+                        <i class="fa-solid fa-user input-icon-left"></i>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            class="input-field" 
+                            placeholder="Enter your username" 
+                            required 
+                            autofocus 
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="password">Password</label>
+                    <div class="input-container">
+                        <i class="fa-solid fa-lock input-icon-left"></i>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="input-field" 
+                            placeholder="••••••••••••" 
+                            required 
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="toggle-password" id="togglePasswordBtn" title="Show/Hide Password">
+                            <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button" id="loginBtn">
+                    <span>Sign In to Console</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="form-footer-box">
+                Don't have an account yet? 
+                <a href="{% url 'register' %}">Create account here →</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Password toggle visibility
+        const toggleBtn = document.getElementById('togglePasswordBtn');
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        if (toggleBtn && passwordInput && toggleIcon) {
+            toggleBtn.addEventListener('click', function () {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                toggleIcon.className = isPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            });
+        }
+    </script>
+</body>
+</html>

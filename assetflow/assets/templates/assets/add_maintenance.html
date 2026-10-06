@@ -1,0 +1,44 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Report Issue | AssetFlow{% endblock %}
+{% block nav_maintenance %}active{% endblock %}
+{% block page_title %}Report Asset Issue{% endblock %}
+{% block page_subtitle %}Create a maintenance record for an asset that requires attention{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'maintenance_list' %}" class="btn-secondary">← Back to Maintenance</a>
+{% endblock %}
+
+{% block content %}
+<div class="form-card" style="max-width:680px;">
+    <div class="form-card-title">🛠️ Issue Details</div>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group" style="margin-bottom:18px;">
+            <label>Asset <span class="req">*</span></label>
+            <select name="asset" required>
+                <option value="">Select Asset</option>
+                {% for asset in assets %}
+                <option value="{{ asset.id }}">{{ asset.asset_name }} - {{ asset.asset_code }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:18px;">
+            <label>Issue Description <span class="req">*</span></label>
+            <textarea name="issue" placeholder="Describe the problem with this asset..." required></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:18px;">
+            <label>Reported Date <span class="req">*</span></label>
+            <input type="date" name="reported_date" required>
+        </div>
+        <div class="form-group" style="margin-bottom:18px;">
+            <label>Remarks</label>
+            <textarea name="remarks" placeholder="Add any additional information..."></textarea>
+        </div>
+        <div class="form-actions">
+            <a href="{% url 'maintenance_list' %}" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-save">Report Issue →</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

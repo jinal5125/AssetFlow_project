@@ -1,0 +1,59 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Employees | AssetFlow{% endblock %}
+{% block nav_employees %}active{% endblock %}
+{% block page_title %}Employees{% endblock %}
+{% block page_subtitle %}Manage all company employees{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'add_employee' %}" class="btn-primary">＋ Add Employee</a>
+{% endblock %}
+
+{% block extra_css %}
+    .emp-name{font-weight:600;}.emp-code{font-size:11.5px;color:var(--muted2);margin-top:2px;font-family:monospace;}
+    .dept-badge{background:#eef2ff;color:#4f46e5;padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:700;}
+    .email-link{color:var(--muted);font-size:13px;}
+    .btn-emp-edit{padding:5px 12px;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;background:#eef2ff;color:#4f46e5;transition:all .2s;}
+    .btn-emp-edit:hover{background:#e0e7ff;}
+    .btn-emp-delete{padding:5px 12px;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;background:#fef2f2;color:#dc2626;transition:all .2s;}
+    .btn-emp-delete:hover{background:#fee2e2;}
+{% endblock %}
+
+{% block content %}
+<form method="GET" class="search-bar">
+    <input type="text" name="search" value="{{ search|default:'' }}" placeholder="🔍  Search employee, email or department...">
+    <button type="submit" class="btn-search">Search</button>
+    <a href="{% url 'employees_list' %}" class="btn-reset">Reset</a>
+</form>
+
+<div class="table-card">
+    <div class="table-head">
+        <h2>All Employees</h2>
+        <span class="count">{{ employees|length }} records</span>
+    </div>
+    <table>
+        <thead><tr><th>Employee</th><th>Email</th><th>Phone</th><th>Department</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for employee in employees %}
+        <tr>
+            <td><div class="emp-name">{{ employee.name }}</div><div class="emp-code">{{ employee.employee_code }}</div></td>
+            <td><span class="email-link">{{ employee.email }}</span></td>
+            <td>{{ employee.phone }}</td>
+            <td><span class="dept-badge">{{ employee.department }}</span></td>
+            <td><div class="action-btns">
+                <a href="{% url 'edit_employee' employee.id %}" class="btn-emp-edit">Edit</a>
+                <a href="{% url 'delete_employee' employee.id %}" class="btn-emp-delete">Delete</a>
+            </div></td>
+        </tr>
+        {% empty %}
+        <tr class="empty-row"><td colspan="5">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                <span style="font-size:36px;opacity:0.3;">👥</span>
+                <div>No employees found. <a href="{% url 'add_employee' %}" style="color:var(--primary);font-weight:600;">Add a new employee</a>.</div>
+            </div>
+        </td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

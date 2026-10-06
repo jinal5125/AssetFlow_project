@@ -1,0 +1,54 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Return Asset | AssetFlow{% endblock %}
+{% block nav_assignments %}active{% endblock %}
+{% block page_title %}Return Asset{% endblock %}
+{% block page_subtitle %}Confirm the asset return{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'assignments_list' %}" class="btn-secondary">← Back to Assignments</a>
+{% endblock %}
+
+{% block extra_css %}
+    .return-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:520px;box-shadow:0 4px 24px rgba(0,0,0,.05);}
+    .return-icon{text-align:center;font-size:48px;margin-bottom:14px;}
+    .return-title{text-align:center;font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px;}
+    .return-sub{text-align:center;color:var(--muted);font-size:13.5px;margin-bottom:24px;}
+    .asset-info-box{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:22px;}
+    .info-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13.5px;border-bottom:1px solid #f1f5f9;}
+    .info-row:last-child{border-bottom:none;}
+    .info-label{color:var(--muted);font-weight:600;}
+    .info-value{color:var(--text);font-weight:500;}
+    .btn-return-confirm{padding:12px 26px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+    .btn-return-confirm:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(245,158,11,.35);}
+{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:center;">
+    <div class="return-card">
+        <div class="return-icon">↩️</div>
+        <div class="return-title">Return Asset</div>
+        <div class="return-sub">Confirm the return of this asset</div>
+
+        <div class="asset-info-box">
+            <div class="info-row"><span class="info-label">Asset</span><span class="info-value">{{ assignment.asset.asset_name }}</span></div>
+            <div class="info-row"><span class="info-label">Asset Code</span><span class="info-value">{{ assignment.asset.asset_code }}</span></div>
+            <div class="info-row"><span class="info-label">Employee</span><span class="info-value">{{ assignment.employee.name }}</span></div>
+            <div class="info-row"><span class="info-label">Department</span><span class="info-value">{{ assignment.employee.department }}</span></div>
+            <div class="info-row"><span class="info-label">Assigned Date</span><span class="info-value">{{ assignment.assigned_date }}</span></div>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom:20px;">
+                <label>Returned Date <span class="req">*</span></label>
+                <input type="date" name="returned_date" required>
+            </div>
+            <div style="display:flex;gap:12px;">
+                <a href="{% url 'assignments_list' %}" class="btn-cancel" style="flex:1;justify-content:center;">Cancel</a>
+                <button type="submit" class="btn-return-confirm" style="flex:1;">↩ Return Asset</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

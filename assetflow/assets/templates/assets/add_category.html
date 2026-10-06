@@ -1,0 +1,34 @@
+{% extends "assets/base.html" %}
+
+{% block title %}Add Category | AssetFlow{% endblock %}
+{% block nav_categories_open %}open{% endblock %}
+{% block nav_categories_show %}show{% endblock %}
+{% block nav_cat_add %}active{% endblock %}
+{% block page_title %}Create Category{% endblock %}
+{% block page_subtitle %}Categorize your IT assets for better organization{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'categories_list' %}" class="btn-secondary">← Back to Categories</a>
+{% endblock %}
+
+{% block content %}
+<div class="form-card" style="max-width:640px;">
+    <div class="form-card-title">🏷️ New Asset Category</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:22px;">Categories group your hardware and software inventory for reporting and organization.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group" style="margin-bottom:18px;">
+            <label for="name">Category Name <span class="req">*</span></label>
+            <input type="text" id="name" name="name" placeholder="e.g. Laptop, Server, Network Switch" value="{{ form_data.name|default:'' }}" required autofocus>
+        </div>
+        <div class="form-group" style="margin-bottom:18px;">
+            <label for="description">Description <span style="color:var(--muted);font-weight:400;">(Optional)</span></label>
+            <textarea id="description" name="description" placeholder="Provide a brief summary of the asset types included in this category...">{{ form_data.description|default:'' }}</textarea>
+        </div>
+        <div class="form-actions">
+            <a href="{% url 'categories_list' %}" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-save">✓ Save Category</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
